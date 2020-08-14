@@ -24,7 +24,7 @@ void init();
 int handleEvents(int *running, fractalData *fractalData, mouseData *mouseData);
 void quit(SDL_Window *window, SDL_Renderer *renderer);
 void createWindowRenderer(SDL_Window *window, SDL_Renderer *renderer);
-void drawMander(SDL_Renderer *renderer, fractalData *fractalData, SDL_Texture *texture, Uint32 *pixels);
+void drawMandelbrot(SDL_Renderer *renderer, fractalData *fractalData, SDL_Texture *texture, Uint32 *pixels);
 
 
 int main(int argc, char* argv[]) {
@@ -41,37 +41,36 @@ int main(int argc, char* argv[]) {
     }
 
     int running = 1;
+
+    // TODO : Create struct to hold framerate data
     Uint32 frameStart; 
     int frameTime;
     int frameCounterTime = SDL_GetTicks();
     int frameCount = 0;
     int shouldDraw = 1;
+
+    
     fractalData fractalData;
     initFractal(&fractalData);
-    
     fractalData.zoom_x = WIDTH / (fractalData.x2 - fractalData.x1);
     fractalData.zoom_x = HEIGHT / (fractalData.y2 - fractalData.y1);
-    printf("%f\n", fractalData.zoom_x );
 
     SDL_Texture *texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STATIC, WIDTH, HEIGHT);
-    Uint8 red = 255, green = 0, blue = 0, alpha = 255;
     Uint32 *pixels = (Uint32 *) calloc(WIDTH * HEIGHT,  sizeof(Uint32));
-    for(int i = 0; i < WIDTH * HEIGHT; i++) {
-        // pixels[i] = (255 << 24) + (0 << 16) + (0 << 8) + 0;
-        pixels[i] = 0xFFFFFF;
-    }
     SDL_UpdateTexture(texture, NULL, pixels, WIDTH * sizeof(Uint32));
+    
     mouseData mouseData = MouseData_Default;
     SDL_GetMouseState(&mouseData.x, &mouseData.y);
     
-
-    drawMander(renderer, &fractalData, texture, pixels);
+    // We need to draw it a first time outside the main loop because it is only re-rendered
+    // when an user-input occurs.
+    drawMandelbrot(renderer, &fractalData, texture, pixels);
     while(running) {
         frameStart = SDL_GetTicks();
         shouldDraw = handleEvents(&running, &fractalData, &mouseData);
     
         if(shouldDraw == 1){
-            drawMander(renderer, &fractalData, texture, pixels);
+            drawMandelbrot(renderer, &fractalData, texture, pixels);
             shouldDraw = 0;
         } 
         frameTime = SDL_GetTicks() - frameStart;
@@ -84,13 +83,11 @@ int main(int argc, char* argv[]) {
             frameCount = 0;
             frameCounterTime = SDL_GetTicks();
         }
-        // SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+
         SDL_RenderClear(renderer);
         SDL_RenderCopy(renderer, texture, NULL, NULL);
         SDL_RenderPresent(renderer);
         frameCount++;
-
-        // printf("fd x1 : %d ; y1 %d \n", fractalData.x1, fractalData.y1);
     }
 
     free(pixels);
@@ -98,14 +95,13 @@ int main(int argc, char* argv[]) {
     return 0;
 }
 
-void drawMander(SDL_Renderer *renderer, fractalData *fractalData, SDL_Texture *texture, Uint32 *pixels) {
-     int iters = 50;
+void drawMandelbrot(SDL_Renderer *renderer, fractalData *fractalData, SDL_Texture *texture, Uint32 *pixels) {
+    /**
+     * This function 
+     *  
+     **/
 
     float c_r, c_i, z_r, tmp_zr, z_i, i;
-    
-    // SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
-    // SDL_RenderClear(renderer);
-
     for(int x = 0; x < WIDTH ; x++) {
         for(int y = 0; y < HEIGHT ;y++) {
             c_r = x / fractalData->zoom_x + fractalData->x1;
@@ -121,20 +117,11 @@ void drawMander(SDL_Renderer *renderer, fractalData *fractalData, SDL_Texture *t
                 i++;
             }
 
-            // if(i == fractalData->iterations) {
-            //     SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);          
-            // }else{
-            //     SDL_SetRenderDrawColor(renderer, i * 255 / iters, i * 255 / iters, 0, 255);
-            // }
-
-            // SDL_RenderDrawPoint(renderer,x, y);
-            // printf("%d\n", y * HEIGHT + x);
             if(i == fractalData->iterations) {
                 pixels[y * WIDTH + x] = 0xFFFFFFFF;
             } else{
-                pixels[y * WIDTH + x] = (0 << 24) + ((int) (i * 0 / iters) << 16) + ((int) (i * 255 / iters) << 8) + ((int) (i * 255 / iters) );
+                pixels[y * WIDTH + x] = (0 << 24) + ((int) (i * 0 / fractalData->iterations) << 16) + ((int) (i * 255 / fractalData->iterations) << 8) + ((int) (i * 255 / fractalData->iterations) );
             }
-            
         }
 
     }
@@ -149,10 +136,18 @@ void init() {
 
 
 int handleEvents(int *running, fractalData *fractalData, mouseData *mouseData) {
+    /**
+     * This function will handle events and return 1 if an user-input applied changes
+     * to the Mandelbrot Set so we can render it again, otherwise it returns 0.
+     * 
+     *  - *running = Set it to 0 if we want app to stop.
+     **/
+
     SDL_Event e;
     int stateModified = 0;
-    int tmpX = 0, tmpY = 0, tmpBuffer = 0;
+    int tmpX = 0, tmpY = 0, tmpBuffer = 0, mouseX, mouseY;;
     float offset_x, offset_y;
+
     while(SDL_PollEvent(&e)) {
         switch(e.type) {
              case SDL_QUIT:
@@ -160,8 +155,9 @@ int handleEvents(int *running, fractalData *fractalData, mouseData *mouseData) {
                 break;
             
             case SDL_KEYDOWN:
+
                 if(e.key.keysym.sym == SDLK_KP_SPACE) {
-                    // initFractal(*fractalData);
+                    initFractal(fractalData);
                     stateModified = 1;
                     return stateModified;
                 }
@@ -172,7 +168,6 @@ int handleEvents(int *running, fractalData *fractalData, mouseData *mouseData) {
 
             case SDL_MOUSEWHEEL:
                 if(e.wheel.y == 0) break;
-                int mouseX, mouseY;
                 SDL_GetMouseState(&mouseX, &mouseY);
                 float zoom = fractalData->zoom_x * 0.3;
                 if(e.wheel.y < 0) zoom = -zoom;

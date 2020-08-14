@@ -7,8 +7,8 @@ void initFractal(fractalData *fd) {
     fd->y1 = -1.2f;
     fd->x2 = 0.6f;
     fd->y2 = 1.2f;
-    fd->zoom_x = 100;
-    fd->zoom_y = 100;
+    fd->zoom_x = 0;
+    fd->zoom_y = 0;
 }
 
 void fAddZoom(fractalData *fd, float zoomOffset) {
