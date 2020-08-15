@@ -25,6 +25,7 @@ int handleEvents(int *running, fractalData *fractalData, mouseData *mouseData);
 void quit(SDL_Window *window, SDL_Renderer *renderer);
 void createWindowRenderer(SDL_Window *window, SDL_Renderer *renderer);
 void drawMandelbrot(SDL_Renderer *renderer, fractalData *fractalData, SDL_Texture *texture, Uint32 *pixels);
+void* updatePixelArray(void* args);
 
 
 int main(int argc, char* argv[]) {
@@ -97,8 +98,7 @@ int main(int argc, char* argv[]) {
 
 void drawMandelbrot(SDL_Renderer *renderer, fractalData *fractalData, SDL_Texture *texture, Uint32 *pixels) {
     /**
-     * This function 
-     *  
+     * This function  updates the pixels array (Uint32 *pixels) that will be drawn.
      **/
 
     float c_r, c_i, z_r, tmp_zr, z_i, i;
@@ -211,6 +211,6 @@ void quit(SDL_Window *window, SDL_Renderer *renderer) {
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
     SDL_Quit(); 
-    printf("GoodBye, all trerminated. . .\n");
+    printf("GoodBye, it's over now. . .\n");
 }
 // gcc src/main.c src/fractals.c src/fractals.h -o bin/main -I include -L lib -lmingw32 -lSDL2main -lSDL2; bin/main.exe
