@@ -2,7 +2,7 @@
 #include <stdio.h>
 
 void initFractal(fractalData *fd) {
-    fd->iterations = 100;
+    fd->iterations = 50;
     fd->x1 = -2.1f;
     fd->y1 = -1.2f;
     fd->x2 = 0.6f;
