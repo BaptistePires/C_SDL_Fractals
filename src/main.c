@@ -27,6 +27,8 @@ struct ThreadPixelArg {
         int endHeight;
         fractalData *fd;
         Uint32 *pixels;
+        int running;
+        int n;
 };
 
 typedef struct ThreadPixelArg threadPixelArg;
@@ -81,20 +83,25 @@ int main(int argc, char* argv[]) {
     int heightComputed = HEIGHT / COUNT_THREAD;
     for(int i = 0; i < COUNT_THREAD; i++) {
         argsIndexed[i].startHeight = i * heightComputed;
-        argsIndexed[i].endHeight = argsIndexed[i].startHeight + heightComputed;
-        //if(i != COUNT_THREAD - 1) argsIndexed[i].endHeight--;
+        argsIndexed[i].endHeight = argsIndexed[i].startHeight + heightComputed ;
         argsIndexed[i].fd = &fractalData;
         argsIndexed[i].pixels = pixels;
+        argsIndexed[i].running = 1;
+        argsIndexed[i].n = i + 1;
     }
+    for(int i = 0; i < COUNT_THREAD; i++) {
+        pthread_create(&threads_id[i], NULL, updatePixelArray, (void *)&argsIndexed[i]);
+    }
+    printf("Thread and args done;\n");
     
     // We need to draw it a first time outside the main loop because it is only re-rendered
     // when an user-input occurs.
-    drawMandelbrot(renderer, &fractalData, texture, pixels);
+    //drawMandelbrot(renderer, &fractalData, texture, pixels);
     while(running) {
         frameStart = SDL_GetTicks();
         shouldDraw = handleEvents(&running, &fractalData, &mouseData);
     
-        if(shouldDraw == 1){
+/*        if(shouldDraw == 1 || shouldDraw == 0){
             
             for(int i = 0; i < COUNT_THREAD; i++) {
                 pthread_create(&threads_id[i], NULL, updatePixelArray, (void *)&argsIndexed[i]);
@@ -107,7 +114,7 @@ int main(int argc, char* argv[]) {
             SDL_UpdateTexture(texture, NULL, pixels, WIDTH * sizeof(Uint32));
 
             shouldDraw = 0;
-        } 
+        } */
         frameTime = SDL_GetTicks() - frameStart;
         if(frameTime < FRAME_TIME) {
             SDL_Delay(FRAME_TIME - frameTime);
@@ -119,84 +126,64 @@ int main(int argc, char* argv[]) {
             frameCounterTime = SDL_GetTicks();
         }
 
+        SDL_UpdateTexture(texture, NULL, pixels, WIDTH * sizeof(Uint32));
         SDL_RenderClear(renderer);
         SDL_RenderCopy(renderer, texture, NULL, NULL);
         SDL_RenderPresent(renderer);
         frameCount++;
     }
 
+    for(int i = 0; i < COUNT_THREAD; i++) {
+        argsIndexed[i].running = 0;
+        pthread_join(threads_id[i], NULL);
+    }
+
     free(pixels);
     quit(window, renderer);
-    return 0;
+    return EXIT_SUCCESS;
 }
 
 void* updatePixelArray(void* args) {
-
-    threadPixelArg *data = (threadPixelArg *)args;
-    printf("thread start : %d; end : %d\n", data->startHeight, data->endHeight);
-    float c_r, c_i, z_r, tmp_zr, z_i, i;
-    for(int x = 0; x < WIDTH ; x++) {
-        for(int y = data->startHeight; y < data->endHeight ;y++) {
-            c_r = x / data->fd->zoom_x + data->fd->x1;
-            c_i = y / data->fd->zoom_x + data->fd->y1;
-            z_r = 0;
-            z_i = 0;
-            i = 0;
-
-            while((z_r*z_r + z_i*z_i) < 4 && i < data->fd->iterations) {
-                tmp_zr = z_r;
-                z_r = z_r*z_r - z_i*z_i + c_r;
-                z_i = 2 * z_i * tmp_zr + c_i;
-                i++;
-            }
-
-            if(i == data->fd->iterations) {
-                data->pixels[y * WIDTH + x] = 0xFFFFFFFF;
-            } else{
-                data->pixels[y * WIDTH + x] = (0 << 24) + ((int) (i * 0 / data->fd->iterations) << 16) + ((int) (i * 255 / data->fd->iterations) << 8) + ((int) (i * 255 / data->fd->iterations) );
-            }
-        }
-
-    }
-    return NULL;
-}
-
-void drawMandelbrot(SDL_Renderer *renderer, fractalData *fractalData, SDL_Texture *texture, Uint32 *pixels) {
     /**
-     * This function  updates the pixels array (Uint32 *pixels) that will be drawn.
-     **/
-
+     * This function is called in threads, each thread will handle a slice of the window to render, boundaries are in arg.
+     */
+    threadPixelArg *data = (threadPixelArg *)args;
+    printf("Thread n°%d created ! \n", data->n);
     float c_r, c_i, z_r, tmp_zr, z_i, i;
-    for(int x = 0; x < WIDTH ; x++) {
-        for(int y = 0; y < HEIGHT ;y++) {
-            c_r = x / fractalData->zoom_x + fractalData->x1;
-            c_i = y / fractalData->zoom_x + fractalData->y1;
-            z_r = 0;
-            z_i = 0;
-            i = 0;
+    int x, y;
+    while(data->running == 1) {
+        for(x = 0; x < WIDTH ; x++) {
+                for(y = data->startHeight; y < data->endHeight ;y++) {
+                    c_r = x / data->fd->zoom_x + data->fd->x1;
+                    c_i = y / data->fd->zoom_x + data->fd->y1;
+                    z_r = 0;
+                    z_i = 0;
+                    i = 0;
 
-            while((z_r*z_r + z_i*z_i) < 4 && i < fractalData->iterations) {
-                tmp_zr = z_r;
-                z_r = z_r*z_r - z_i*z_i + c_r;
-                z_i = 2 * z_i * tmp_zr + c_i;
-                i++;
+                    while((z_r*z_r + z_i*z_i) < 4 && i < data->fd->iterations) {
+                        tmp_zr = z_r;
+                        z_r = z_r*z_r - z_i*z_i + c_r;
+                        z_i = 2 * z_i * tmp_zr + c_i;
+                        i++;
+                    }
+
+                    if(i == data->fd->iterations) {
+                        data->pixels[y * WIDTH + x] = 0xFFFFFFFF;
+                    } else{
+                        data->pixels[y * WIDTH + x] = (0 << 24) + ((int) (i * 255 / data->fd->iterations) << 16) + ((int) (i * 0 / data->fd->iterations) << 8) + ((int) (i * 255 / data->fd->iterations) );
+                    }
+                }
+
             }
-
-            if(i == fractalData->iterations) {
-                pixels[y * WIDTH + x] = 0xFFFFFFFF;
-            } else{
-                pixels[y * WIDTH + x] = (0 << 24) + ((int) (i * 0 / fractalData->iterations) << 16) + ((int) (i * 255 / fractalData->iterations) << 8) + ((int) (i * 255 / fractalData->iterations) );
-            }
-        }
-
     }
-    SDL_UpdateTexture(texture, NULL, pixels, WIDTH * sizeof(Uint32));
+    printf("quit thread n°%d ! \n", data->n);
+    return EXIT_SUCCESS;
 }
 
 void init() {
     printf("Initialize SDL . . .\n");
     SDL_Init(SDL_INIT_VIDEO);
-    printf("Initializes !\n");
+    printf("Initialized !\n");
 }
 
 
@@ -217,7 +204,8 @@ int handleEvents(int *running, fractalData *fractalData, mouseData *mouseData) {
         switch(e.type) {
              case SDL_QUIT:
                 *running = 0;
-                break;
+                stateModified = 0;
+                return stateModified;
             
             case SDL_KEYDOWN:
 
@@ -250,17 +238,30 @@ int handleEvents(int *running, fractalData *fractalData, mouseData *mouseData) {
                 break;
 
             case SDL_MOUSEMOTION:
-                if(mouseData->pressed == 0 || (SDL_GetTicks() - mouseData->lastUpdated) < 10) break;
+                if(mouseData->pressed == 0 ) break;
                 
                 mouseData->oldX = mouseData->x;
                 mouseData->oldY = mouseData->y;
                 SDL_GetMouseState(&mouseData->x, &mouseData->y);
+                // /printf("mousex: %d, mousey: %d\n", mouseData->x, mouseData->y);
 
-                float dx = mouseData->oldX - mouseData->x;
-                float dy = mouseData->oldY - mouseData->y;
+                float dx = (float) mouseData->oldX - (float)  mouseData->x;
+                float dy = (float) mouseData->oldY - (float) mouseData->y;
+                if(fractalData->zoom_x > 100000) {
+                    fractalData->x1 += dx / 100000.0 ;
+                    fractalData->y1 += dy / 100000.0;
+                    
+                }else if(fractalData->zoom_x > 30000){
+                    fractalData->x1 += dx / 10000.0 ;
+                    fractalData->y1 += dy / 10000.0;
+                }else{
+                    fractalData->x1 += dx / 1000.0 ;
+                    fractalData->y1 += dy / 1000.0;
+                }
 
-                fractalData->x1 += dx / 1000 + 1 / fractalData->zoom_x;
-                fractalData->y1 += dy / 1000 + 1 / fractalData->zoom_y;
+                printf("dx: %d, dy: %d\n", dx, dy);
+                /*fractalData->x1 += 1;
+                fractalData->y1 += 1;*/
                 mouseData->lastUpdated = SDL_GetTicks();
                 stateModified = 1;
                 break;

@@ -2,7 +2,7 @@ CC  = gcc
 OBJS = src/main.c src/fractals.c
 
 DEPS = src/fractals.h
-COMPILER_FLAGS = -w -lpthread
+COMPILER_FLAGS = -w -lpthread 
 
 LINKER_FLAGS = -lSDL2
 

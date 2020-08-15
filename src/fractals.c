@@ -1,8 +1,10 @@
 #include "fractals.h"
 #include <stdio.h>
 
+// TODO : move zoom here and make it nice not trash
+
 void initFractal(fractalData *fd) {
-    fd->iterations = 50;
+    fd->iterations = 100;
     fd->x1 = -2.1f;
     fd->y1 = -1.2f;
     fd->x2 = 0.6f;
@@ -33,3 +35,4 @@ void fAddZoom(fractalData *fd, float zoomOffset) {
     // else if(tmpy < MIN_ZOOM) fd->zoom_y = MIN_ZOOM;
     // else fd->zoom_y = zoomOffset;
 }
+
