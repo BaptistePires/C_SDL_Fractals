@@ -180,7 +180,7 @@ void* updatePixelArray(void* args) {
                     if(i == data->fd->iterations) {
                         data->pixels[y * WIDTH + x] = 0xFFFFFFFF;
                     } else{
-                        data->pixels[y * WIDTH + x] = (0 << 24) + ((int) (i * 255 / data->fd->iterations) << 16) + ((int) (i * 0 / data->fd->iterations) << 8) + ((int) (i * 255 / data->fd->iterations) );
+                        data->pixels[y * WIDTH + x] = (255 << 24) + ((int) (i * 255 / data->fd->iterations) << 16) + ((int) (i *  0 / data->fd->iterations) << 8) + ((int) (i * 255 / data->fd->iterations) );
                     }
                 }
 
