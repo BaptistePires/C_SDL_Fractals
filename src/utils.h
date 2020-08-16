@@ -10,6 +10,7 @@
 #endif
 
 #include "fractals.h"
+#include "guiMenu.h"
 
 // Create separated files for handling input -> will stay here atm
 struct MouseData_s {
@@ -23,7 +24,7 @@ struct MouseData_s {
 
 typedef struct MouseData_s mouseData;
 
-// This struct will be used as arg. given to the thread to render fractal.
+// This struct will be used as arg. given to the thread to render the
 struct ThreadPixelArg {
         int startHeight;
         int endHeight;
@@ -31,6 +32,7 @@ struct ThreadPixelArg {
         Uint32 *pixels;
         int running;
         int n;
+        menuSlider *mss;
 };
 
 typedef struct ThreadPixelArg threadPixelArg;

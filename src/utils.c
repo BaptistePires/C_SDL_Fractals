@@ -35,7 +35,7 @@ void* updatePixelArray(void* args) {
                     if(i == data->fd->iterations) {
                         data->pixels[y * data->fd->width + x] = 0xFFFFFFFF;
                     } else{
-                        data->pixels[y * data->fd->width + x] = (255 << 24) + ((int) (i * 255 / data->fd->iterations) << 16) + ((int) (i *  0 / data->fd->iterations) << 8) + ((int) (i * 255 / data->fd->iterations) );
+                        data->pixels[y * data->fd->width + x] = ((int) (i * getSliderValueByFlag(data->mss,'a')  * 255) << 24) + ((int) (i * getSliderValueByFlag(data->mss,'r')  * 255) << 16) + ((int) (i * getSliderValueByFlag(data->mss,'g')  * 255)<< 8) + ((int) (i * getSliderValueByFlag(data->mss,'b')  * 255) );
                     }
                 }
 
