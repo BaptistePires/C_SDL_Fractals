@@ -12,8 +12,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
-#include "fractals.h"
 #include <pthread.h>
+#include "fractals.h"
+#include "utils.h"
+
 
 #define FPS 144.0
 #define FRAME_TIME 1000.0 / FPS
@@ -22,18 +24,6 @@
 #define COUNT_THREAD 8
 #define TITLE "Fractals"
 
-
-
-struct ThreadPixelArg {
-        int startHeight;
-        int endHeight;
-        fractalData *fd;
-        Uint32 *pixels;
-        int running;
-        int n;
-};
-
-typedef struct ThreadPixelArg threadPixelArg;
 
 void init();
 int handleEvents(int *running, fractalData *fractalData, mouseData *mouseData);
@@ -69,6 +59,7 @@ int main(int argc, char* argv[]) {
         GetSystemInfo(&sysinfo);
         nbCores = sysinfo.dwNumberOfProcessors;
     #endif
+
     // TODO : Create struct to hold framerate data
     Uint32 frameStart; 
     int frameTime;
@@ -115,10 +106,6 @@ int main(int argc, char* argv[]) {
         argsIndexed[i].n = i + 1;
         pthread_create(&threads_id[i], NULL, updatePixelArray, (void *)&argsIndexed[i]);
     }
-    /*for(int i = 0; i < nbCores; i++) {
-        pthread_create(&threads_id[i], NULL, updatePixelArray, (void *)&argsIndexed[i]);
-    }*/
-    printf("Thread and args done;\n");
     
     // We need to draw it a first time outside the main loop because it is only re-rendered
     // when an user-input occurs.
@@ -153,43 +140,6 @@ int main(int argc, char* argv[]) {
     return 0;
 }
 
-void* updatePixelArray(void* args) {
-    /**
-     * This function is called in threads, each thread will handle a slice of the window to render, boundaries are in arg.
-     */
-    threadPixelArg *data = (threadPixelArg *)args;
-    printf("Thread n°%d created ! \n", data->n);
-    float c_r, c_i, z_r, tmp_zr, z_i, i;
-    int x, y;
-    while(data->running == 1) {
-        for(x = 0; x < data->fd->width ; x++) {
-                for(y = data->startHeight; y < data->endHeight ;y++) {
-                    c_r = x / data->fd->zoom_x + data->fd->x1;
-                    c_i = y / data->fd->zoom_x + data->fd->y1;
-                    z_r = 0;
-                    z_i = 0;
-                    i = 0;
-
-                    while((z_r*z_r + z_i*z_i) < 4 && i < data->fd->iterations) {
-                        tmp_zr = z_r;
-                        z_r = z_r*z_r - z_i*z_i + c_r;
-                        z_i = 2 * z_i * tmp_zr + c_i;
-                        i++;
-                    }
-
-                    if(i == data->fd->iterations) {
-                        data->pixels[y * WIDTH + x] = 0xFFFFFFFF;
-                    } else{
-                        data->pixels[y * WIDTH + x] = (255 << 24) + ((int) (i * 255 / data->fd->iterations) << 16) + ((int) (i *  0 / data->fd->iterations) << 8) + ((int) (i * 255 / data->fd->iterations) );
-                    }
-                }
-
-            }
-    }
-    printf("quit thread n°%d ! \n", data->n);
-    return 0;
-}
-
 void init() {
     printf("Initialize SDL . . .\n");
     SDL_Init(SDL_INIT_VIDEO);
@@ -218,7 +168,6 @@ int handleEvents(int *running, fractalData *fractalData, mouseData *mouseData) {
                 return stateModified;
             
             case SDL_KEYDOWN:
-
                 if(e.key.keysym.sym == SDLK_ESCAPE) {
                     *running = 0;
                     stateModified =  0;
@@ -228,15 +177,13 @@ int handleEvents(int *running, fractalData *fractalData, mouseData *mouseData) {
 
             case SDL_MOUSEWHEEL:
                 if(e.wheel.y == 0) break;
-                mouseData->oldX = mouseData->x;
-                mouseData->oldY = mouseData->y;
-                SDL_GetMouseState(&mouseX, &mouseY);
-                fHandleWheelMotion(fractalData, mouseData, e.wheel.y);
+                updateMouseData(mouseData);
+                fHandleWheelMotion(fractalData, mouseData->x, mouseData->y, e.wheel.y);
                 stateModified =  1;
                 break;
 
             case SDL_MOUSEBUTTONDOWN:
-                SDL_GetMouseState(&mouseData->x, &mouseData->y);
+                updateMouseData(mouseData);
                 mouseData->pressed = 1;
                 break;
 
@@ -246,13 +193,10 @@ int handleEvents(int *running, fractalData *fractalData, mouseData *mouseData) {
 
             case SDL_MOUSEMOTION:
                 if(mouseData->pressed == 0) break;
-                mouseData->oldX = mouseData->x;
-                mouseData->oldY = mouseData->y;
-                SDL_GetMouseState(&mouseData->x, &mouseData->y);
+                updateMouseData(mouseData);
                 dx = (float) mouseData->oldX - (float)  mouseData->x;
                 dy = (float) mouseData->oldY - (float) mouseData->y;
                 fMove(fractalData, dx, dy);
-
                 mouseData->lastUpdated = SDL_GetTicks();
                 stateModified = 1;
                 break;

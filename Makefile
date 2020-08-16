@@ -1,13 +1,12 @@
 CC  = gcc
-OBJS = src/main.c src/fractals.c
+OBJS = src/*.c
 
-DEPS = src/fractals.h
+DEPS = src/*.h
 COMPILER_FLAGS = -w -lpthread 
 
 LINKER_FLAGS = -lSDL2
 
 OBJ_NAME = Fractals
-
 
 %.o: src/%.c %(DEPS)
 	$(CC) -c -o $@ $< 

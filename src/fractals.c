@@ -55,16 +55,16 @@ void fMove(fractalData *fd, float dx, float dy) {
     }
 }
 
-void fHandleWheelMotion(fractalData *fd, mouseData *md, int wheelY) {
+void fHandleWheelMotion(fractalData *fd, int mx, int my, int wheelY) {
     // TODO / Update this trash zoom
     float zoom = fd->zoom_x * 0.3;
-    if(md->x > fd->width / 2) {
+    if(mx > fd->width / 2) {
         fd->x1 -= 100 / fd->zoom_x;
     }else{
         fd->x1 += 100 / fd->zoom_x;
     }
 
-    if(md->y > fd->height / 2) {
+    if(my > fd->height / 2) {
         fd->y1 -= 100 / fd->zoom_x;
     }else{
         fd->y1 += 100 / fd->zoom_x;
