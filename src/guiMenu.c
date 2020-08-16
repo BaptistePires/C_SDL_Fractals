@@ -28,8 +28,8 @@ void setUpMenuSliders(menuSlider *ms, float width, float height) {
     ms->sliders[0].btn.x = 10;
     ms->sliders[0].btn.y = ms->sliders[0].slide.y + ms->sliders[0].slide.h /2  - ms->sliders[0].btn.h / 2;
     
-    ms->sliders[0].btnColor.r = 0;
-    ms->sliders[0].btnColor.g = 255;
+    ms->sliders[0].btnColor.r = 255;
+    ms->sliders[0].btnColor.g = 0;
     ms->sliders[0].btnColor.b = 0;
     ms->sliders[0].btnColor.a = 255;
     ms->sliders[0].flag = 'r';
@@ -49,8 +49,8 @@ void setUpMenuSliders(menuSlider *ms, float width, float height) {
     ms->sliders[1].btn.x = 10;
     ms->sliders[1].btn.y = ms->sliders[1].slide.y + ms->sliders[1].slide.h /2  - ms->sliders[1].btn.h / 2;
     
-    ms->sliders[1].btnColor.r = 255;
-    ms->sliders[1].btnColor.g = 0;
+    ms->sliders[1].btnColor.r = 0;
+    ms->sliders[1].btnColor.g = 255;
     ms->sliders[1].btnColor.b = 0;
     ms->sliders[1].btnColor.a = 0;
     ms->sliders[1].flag = 'g';
@@ -70,9 +70,9 @@ void setUpMenuSliders(menuSlider *ms, float width, float height) {
     ms->sliders[2].btn.x = 10;
     ms->sliders[2].btn.y = ms->sliders[2].slide.y + ms->sliders[2].slide.h /2  - ms->sliders[2].btn.h / 2;
     
-    ms->sliders[2].btnColor.r = 255;
+    ms->sliders[2].btnColor.r = 0;
     ms->sliders[2].btnColor.g = 0;
-    ms->sliders[2].btnColor.b = 0;
+    ms->sliders[2].btnColor.b = 255;
     ms->sliders[2].btnColor.a = 0;
     ms->sliders[2].flag = 'b';
 
@@ -91,7 +91,7 @@ void setUpMenuSliders(menuSlider *ms, float width, float height) {
     ms->sliders[3].btn.x = 10;
     ms->sliders[3].btn.y = ms->sliders[3].slide.y + ms->sliders[3].slide.h /2  - ms->sliders[3].btn.h / 2;
     
-    ms->sliders[3].btnColor.r = 255;
+    ms->sliders[3].btnColor.r = 0;
     ms->sliders[3].btnColor.g = 0;
     ms->sliders[3].btnColor.b = 0;
     ms->sliders[3].btnColor.a = 0;
@@ -104,7 +104,7 @@ int handleClickedSlider(menuSlider *ms, float mx, float my) {
     if(mx > ms->sliders[0].slide.x && mx <  ms->sliders[0].slide.x +  ms->sliders[0].slide.w){
             ms->sliders[0].btn.x = mx;
             ms->sliders[0].value = (ms->sliders[0].btn.x - ms->sliders[0].slide.x) / (float) ms->sliders[0].slide.w;
-            printf("Value slider : %f\n", ms->sliders[0].value);
+            printf("Value slider : %f  %c\n", ms->sliders[0].value, ms->sliders[0].flag);
     }
 
     return 1;
