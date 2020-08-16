@@ -1,5 +1,14 @@
 # C_SDL_Fractals
 
-This a personnal project, tu run it, you'll need to run it on linux (Need to make threads working on windows). Also, you need to have SDL2 installed and gcc.
+This a personnal project, it renders a Mandelbrot Set. It uses SDL2, pthread_win32 (for windows compatibility).
 
-To run it, go to the root of the project and type : `make ; ./Fractals` .
+To run this project, depending on your OS, you'll need : 
+`Windows` -> All libraries are provided:
+- mingw
+
+To compile the project, run this command : 
+`gcc src/main.c src/fractals.c src/fractals.h -o ./Fractals.exe -I include -L lib -lmingw32 -lSDL2main -lSDL2 -lpthreadVC2; ./Fractals.exe`
+
+`linux` :
+For linux you'll need to install SDL2, then : `make ; ./Fractals` and it will work.
+

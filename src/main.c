@@ -1,9 +1,20 @@
-#include <stdio.h>
+#ifdef unix
 #include <SDL2/SDL.h>
+#include <sys/sysinfo.h>
+#endif
+
+#if defined(_WIN32) || defined(WIN32)
+#include<SDL.h>
+#include<Windows.h>
+#define HAVE_STRUCT_TIMESPEC
+#endif
+
+#include <stdio.h>
+#include <stdlib.h>
 #include <math.h>
 #include "fractals.h"
 #include <pthread.h>
-#include <sys/sysinfo.h>
+
 #define FPS 144.0
 #define FRAME_TIME 1000.0 / FPS
 #define WIDTH 1000  
@@ -48,7 +59,16 @@ int main(int argc, char* argv[]) {
     SDL_SetWindowResizable(window, SDL_TRUE);
 
     int running = 1;
-    int nbCores = get_nprocs() - 1;
+    int nbCores = 0;
+    #ifdef unix
+        nbCores = nbProc();
+    #endif
+
+    #if defined(_WIN32) || defined(WIN32)
+        SYSTEM_INFO sysinfo;
+        GetSystemInfo(&sysinfo);
+        nbCores = sysinfo.dwNumberOfProcessors;
+    #endif
     // TODO : Create struct to hold framerate data
     Uint32 frameStart; 
     int frameTime;
@@ -130,7 +150,7 @@ int main(int argc, char* argv[]) {
 
     free(pixels);
     quit(window, renderer);
-    return EXIT_SUCCESS;
+    return 0;
 }
 
 void* updatePixelArray(void* args) {
@@ -167,7 +187,7 @@ void* updatePixelArray(void* args) {
             }
     }
     printf("quit thread n°%d ! \n", data->n);
-    return EXIT_SUCCESS;
+    return 0;
 }
 
 void init() {
