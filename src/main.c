@@ -5,6 +5,7 @@
 
 #if defined(_WIN32) || defined(WIN32)
 #include <SDL.h>
+#include <SDL_ttf.h>
 #include <Windows.h>
 #define HAVE_STRUCT_TIMESPEC
 #endif
@@ -30,6 +31,7 @@ void quit(SDL_Window *window, SDL_Renderer *renderer);
 void createWindowRenderer(SDL_Window *window, SDL_Renderer *renderer);
 void drawMandelbrot(SDL_Renderer *renderer, fractalData *fractalData, SDL_Texture *texture, Uint32 *pixels);
 void *updatePixelArray(void *args);
+
 
 int main(int argc, char *argv[])
 {
@@ -81,6 +83,18 @@ int main(int argc, char *argv[])
     menuSlider ms;
     setUpMenuSliders(&ms, WIDTH, HEIGHT);
 
+
+
+    TTF_Font *font;
+    #ifdef unix
+        font = TTF_OpenFont("..\\res/roboto.ttf", 20);
+    #endif
+
+    #if defined(_WIN32) || defined(WIN32)
+        font = TTF_OpenFont("..\\res\\roboto.ttf", 20);
+    #endif
+
+
     mouseData mouseData = {0, 0, 0, 0, 0, 0};
     SDL_GetMouseState(&mouseData.x, &mouseData.y);
 
@@ -128,13 +142,13 @@ int main(int argc, char *argv[])
             frameCount = 0;
             frameCounterTime = SDL_GetTicks();
         }
-
+        fractalData.iterations = (float) (MAX_ITER - MIN_ITER) * getSliderValueByFlag(&ms, 'f');
         SDL_UpdateTexture(texture, NULL, pixels, WIDTH * sizeof(Uint32));
         SDL_RenderClear(renderer);
         SDL_RenderCopy(renderer, texture, NULL, NULL);
         SDL_SetRenderDrawColor(renderer, ms.bgColor.r, ms.bgColor.g, ms.bgColor.b, ms.bgColor.a);
         SDL_RenderFillRect(renderer, &ms.rect);
-
+        // Rendering sliders
         for (int i = 0; i < ms.sliderCount; i++)
         {
             SDL_SetRenderDrawColor(renderer, ms.sliders[i].slideColor.r, ms.sliders[i].slideColor.g, ms.sliders[1].slideColor.b, ms.sliders[i].slideColor.a);
@@ -145,6 +159,7 @@ int main(int argc, char *argv[])
 
         SDL_RenderPresent(renderer);
         frameCount++;
+        printf("Fractal Iter : %d\n", fractalData.iterations);
     }
 
     for (int i = 0; i < nbCores; i++)
@@ -155,6 +170,7 @@ int main(int argc, char *argv[])
 
     free(ms.sliders);
     free(pixels);
+    TTF_CloseFont(font);
     quit(window, renderer);
     return 0;
 }
@@ -163,6 +179,7 @@ void init()
 {
     printf("Initialize SDL . . .\n");
     SDL_Init(SDL_INIT_VIDEO);
+    TTF_Init();
     printf("Initialized !\n");
 }
 
@@ -242,6 +259,7 @@ void quit(SDL_Window *window, SDL_Renderer *renderer)
     printf("Quiting . . .\n");
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
+    TTF_Quit();
     SDL_Quit();
     printf("GoodBye, it's over now. . .\n");
 }

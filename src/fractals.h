@@ -3,6 +3,8 @@
 
 #define MAX_ZOOM 100000
 #define MIN_ZOOM 50
+#define MIN_ITER 20
+#define MAX_ITER 1000
 
 struct FractalData_s {
     int iterations;

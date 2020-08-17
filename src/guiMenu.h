@@ -6,10 +6,12 @@
 
 #ifdef unix
 #include <SDL2/SDL.h>
+
 #endif
 
 #if defined(_WIN32) || defined(WIN32)
 #include <SDL.h>
+#include <SDL_ttf.h>
 #endif
 
 
@@ -24,12 +26,14 @@ typedef struct ColorRGBA colorRGBA;
 
 struct Slider {
     SDL_Rect slide;
-    colorRGBA slideColor;
+    SDL_Color slideColor;
     SDL_Rect btn;
-    colorRGBA btnColor;
+    SDL_Color btnColor;
     int selected;
     float value;
     char flag;
+    SDL_Surface *txtSfc;
+    SDL_Rect txtRect;
 };
 
 typedef struct Slider slider;

@@ -3,7 +3,7 @@
 
 
 void setUpMenuSliders(menuSlider *ms, float width, float height) {
-    ms->sliderCount = 4;
+    ms->sliderCount = 5;
     ms->rect.x = 0;
     ms->rect.y = 0;
     ms->rect.w = width / 3;
@@ -33,6 +33,9 @@ void setUpMenuSliders(menuSlider *ms, float width, float height) {
     ms->sliders[0].btnColor.b = 0;
     ms->sliders[0].btnColor.a = 255;
     ms->sliders[0].flag = 'r';
+    ms->sliders[0].txtRect.x = 1;
+    ms->sliders[0].txtRect.y = 25;
+
 
     // slider 2 
     ms->sliders[1].slide.x = 10;
@@ -54,6 +57,8 @@ void setUpMenuSliders(menuSlider *ms, float width, float height) {
     ms->sliders[1].btnColor.b = 0;
     ms->sliders[1].btnColor.a = 0;
     ms->sliders[1].flag = 'g';
+    ms->sliders[0].txtRect.x = 1;
+    ms->sliders[0].txtRect.y = 65;
 
     // slider 3
     ms->sliders[2].slide.x = 10;
@@ -75,8 +80,10 @@ void setUpMenuSliders(menuSlider *ms, float width, float height) {
     ms->sliders[2].btnColor.b = 255;
     ms->sliders[2].btnColor.a = 0;
     ms->sliders[2].flag = 'b';
+    ms->sliders[2].txtRect.x = 1;
+    ms->sliders[2].txtRect.y = 105;
 
-        // slider 3
+    // slider 3
     ms->sliders[3].slide.x = 10;
     ms->sliders[3].slide.y = 150;
     ms->sliders[3].slide.w = ms->rect.w - ms->sliders[3].slide.x * 2;
@@ -96,6 +103,33 @@ void setUpMenuSliders(menuSlider *ms, float width, float height) {
     ms->sliders[3].btnColor.b = 0;
     ms->sliders[3].btnColor.a = 0;
     ms->sliders[3].flag = 'a';
+    ms->sliders[0].txtRect.x = 1;
+    ms->sliders[0].txtRect.y = 145;
+
+    // slider 4
+    ms->sliders[4].slide.x = 10;
+    ms->sliders[4].slide.y = 190;
+    ms->sliders[4].slide.w = ms->rect.w - ms->sliders[4].slide.x * 2;
+    ms->sliders[4].slide.h = 5;
+    ms->sliders[4].slideColor.r = 0;
+    ms->sliders[4].slideColor.g = 0;
+    ms->sliders[4].slideColor.b = 0;
+    ms->sliders[4].slideColor.a = 0;
+
+    ms->sliders[4].btn.w =  15;
+    ms->sliders[4].btn.h = 25;
+    ms->sliders[4].btn.x = 85;
+    ms->sliders[4].btn.y = ms->sliders[4].slide.y + ms->sliders[4].slide.h /2  - ms->sliders[4].btn.h / 2;
+    ms->sliders[4].value = 0.5f;
+
+    ms->sliders[4].btnColor.r = 0;
+    ms->sliders[4].btnColor.g = 0;
+    ms->sliders[4].btnColor.b = 0;
+    ms->sliders[4].btnColor.a = 0;
+    ms->sliders[4].flag = 'f';
+    ms->sliders[4].txtRect.x = 1;
+    ms->sliders[4].txtRect.y = 145;
+
 }
 
 int handleClickedSlider(menuSlider *ms, float mx, float my) {
