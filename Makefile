@@ -1,14 +1,14 @@
 CC  = gcc
-OBJS = src/*.c
+OBJS = src/main.c
 
 DEPS = src/*.h
-COMPILER_FLAGS = -w -lpthread 
+COMPILER_FLAGS = -w -lpthread -O3 
 
 LINKER_FLAGS = -lSDL2
 
 OBJ_NAME = Fractals
 
-%.o: src/%.c %(DEPS)
+%.o: src/%.c %(DEPS):
 	$(CC) -c -o $@ $< 
 
 all : $(OBJS)

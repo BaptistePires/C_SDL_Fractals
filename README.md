@@ -15,3 +15,8 @@ For linux you'll need to install SDL2, then : `make ; ./Fractals` and it will wo
 Here are some images :  
 ![Preview 1](res/img1.png)  
 ![Preview 2](res/img2.png)  
+## V2
+The three buttons allow you to change the color and the black button the number of iterations.
+![Preview 1](res/img3.png)  
+![Preview 2](res/img4.png) 
+![Preview 1](res/img5.png)  

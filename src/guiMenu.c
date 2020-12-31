@@ -83,32 +83,9 @@ void setUpMenuSliders(menuSlider *ms, float width, float height) {
     ms->sliders[2].txtRect.x = 1;
     ms->sliders[2].txtRect.y = 105;
 
-    // slider 3
-    ms->sliders[3].slide.x = 10;
-    ms->sliders[3].slide.y = 150;
-    ms->sliders[3].slide.w = ms->rect.w - ms->sliders[3].slide.x * 2;
-    ms->sliders[3].slide.h = 5;
-    ms->sliders[3].slideColor.r = 0;
-    ms->sliders[3].slideColor.g = 0;
-    ms->sliders[3].slideColor.b = 0;
-    ms->sliders[3].slideColor.a = 0;
-
-    ms->sliders[3].btn.w =  15;
-    ms->sliders[3].btn.h = 25;
-    ms->sliders[3].btn.x = 10;
-    ms->sliders[3].btn.y = ms->sliders[3].slide.y + ms->sliders[3].slide.h /2  - ms->sliders[3].btn.h / 2;
-    
-    ms->sliders[3].btnColor.r = 0;
-    ms->sliders[3].btnColor.g = 0;
-    ms->sliders[3].btnColor.b = 0;
-    ms->sliders[3].btnColor.a = 0;
-    ms->sliders[3].flag = 'a';
-    ms->sliders[0].txtRect.x = 1;
-    ms->sliders[0].txtRect.y = 145;
-
     // slider 4
     ms->sliders[4].slide.x = 10;
-    ms->sliders[4].slide.y = 190;
+    ms->sliders[4].slide.y = 150;
     ms->sliders[4].slide.w = ms->rect.w - ms->sliders[4].slide.x * 2;
     ms->sliders[4].slide.h = 5;
     ms->sliders[4].slideColor.r = 0;

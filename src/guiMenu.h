@@ -11,7 +11,6 @@
 
 #if defined(_WIN32) || defined(WIN32)
 #include <SDL.h>
-#include <SDL_ttf.h>
 #endif
 
 

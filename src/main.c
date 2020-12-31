@@ -5,7 +5,6 @@
 
 #if defined(_WIN32) || defined(WIN32)
 #include <SDL.h>
-#include <SDL_ttf.h>
 #include <Windows.h>
 #define HAVE_STRUCT_TIMESPEC
 #endif
@@ -85,16 +84,6 @@ int main(int argc, char *argv[])
 
 
 
-    TTF_Font *font;
-    #ifdef unix
-        font = TTF_OpenFont("..\\res/roboto.ttf", 20);
-    #endif
-
-    #if defined(_WIN32) || defined(WIN32)
-        font = TTF_OpenFont("..\\res\\roboto.ttf", 20);
-    #endif
-
-
     mouseData mouseData = {0, 0, 0, 0, 0, 0};
     SDL_GetMouseState(&mouseData.x, &mouseData.y);
 
@@ -170,7 +159,7 @@ int main(int argc, char *argv[])
 
     free(ms.sliders);
     free(pixels);
-    TTF_CloseFont(font);
+
     quit(window, renderer);
     return 0;
 }
@@ -179,7 +168,6 @@ void init()
 {
     printf("Initialize SDL . . .\n");
     SDL_Init(SDL_INIT_VIDEO);
-    TTF_Init();
     printf("Initialized !\n");
 }
 
@@ -259,7 +247,6 @@ void quit(SDL_Window *window, SDL_Renderer *renderer)
     printf("Quiting . . .\n");
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
-    TTF_Quit();
     SDL_Quit();
     printf("GoodBye, it's over now. . .\n");
 }
