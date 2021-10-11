@@ -1,17 +1,10 @@
 # C_SDL_Fractals
 
-This a personnal project, it renders a Mandelbrot Set. It uses SDL2, pthread_win32 (for windows compatibility).
+This a personnal project, it renders a Mandelbrot Set using SDL2 for rendering.  
+To run this you'll need `SDL2` installed and the `pthread` library.  
+To compile and run, run this command : `cd src && make && ./Fractals`.  
 
-To run this project, depending on your OS, you'll need :  
-`Windows` -> All libraries are provided:
-  -mingw  
-
-To compile the project, run this command :  
-`gcc src/main.c src/fractals.c src/fractals.h -o ./Fractals.exe -I include -L lib -lmingw32 -lSDL2main -lSDL2 -lpthreadVC2; ./Fractals.exe`
-
-`linux` :
-For linux you'll need to install SDL2, then : `make ; ./Fractals` and it will work.
-
+This is an old project, there is no syncrhonisation between threads, GUI could also be improved..  
 Here are some images :  
 ![Preview 1](res/img1.png)  
 ![Preview 2](res/img2.png)  

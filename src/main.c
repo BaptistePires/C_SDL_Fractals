@@ -1,18 +1,11 @@
-#ifdef unix
 #include <SDL2/SDL.h>
 #include <sys/sysinfo.h>
-#endif
-
-#if defined(_WIN32) || defined(WIN32)
-#include <SDL.h>
-#include <Windows.h>
-#define HAVE_STRUCT_TIMESPEC
-#endif
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
 #include <pthread.h>
+#include <unistd.h>
+
 #include "fractals.h"
 #include "utils.h"
 #include "guiMenu.h"
@@ -50,15 +43,7 @@ int main(int argc, char *argv[])
 
     int running = 1;
     int nbCores = 0;
-#ifdef unix
-    nbCores = nbProc();
-#endif
-
-#if defined(_WIN32) || defined(WIN32)
-    SYSTEM_INFO sysinfo;
-    GetSystemInfo(&sysinfo);
-    nbCores = sysinfo.dwNumberOfProcessors;
-#endif
+    nbCores = sysconf(_SC_NPROCESSORS_ONLN); 
 
     // TODO : Create struct to hold framerate data
     Uint32 frameStart;
@@ -127,7 +112,7 @@ int main(int argc, char *argv[])
 
         if (SDL_GetTicks() - frameCounterTime >= 1000)
         {
-            printf("%d FPS\n", frameCount);
+            //printf("%d FPS\n", frameCount);
             frameCount = 0;
             frameCounterTime = SDL_GetTicks();
         }
@@ -148,7 +133,7 @@ int main(int argc, char *argv[])
 
         SDL_RenderPresent(renderer);
         frameCount++;
-        printf("Fractal Iter : %d\n", fractalData.iterations);
+       // printf("Fractal Iter : %d\n", fractalData.iterations);
     }
 
     for (int i = 0; i < nbCores; i++)
